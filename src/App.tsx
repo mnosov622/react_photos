@@ -13,20 +13,23 @@ export default function App() {
   const totalPages = 5;
   const abortController = new AbortController();
 
-  const { data: photos, error } = useSWR<IPhoto[]>(getFetchPhotosUrl(page - 1), async (url) => {
-    try {
-      const response = await fetch(url, {
-        signal: abortController.signal,
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+  const { data: photos, error } = useSWR<IPhoto[]>(
+    getFetchPhotosUrl(page - 1),
+    async (url) => {
+      try {
+        const response = await fetch(url, {
+          signal: abortController.signal,
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      } catch (error) {
+        console.log("error occured");
+        throw error;
       }
-      return response.json();
-    } catch (error) {
-      console.log("error occured");
-      throw error;
-    }
-  });
+    },
+  );
 
   const loading = !photos && !error;
 
