@@ -6,7 +6,7 @@ import { noop, getFetchPhotosUrl } from "./utils";
 import { InputName, IProps } from "./components/InputName";
 import { IPhoto } from "./interfaces";
 import { useEffect, useState } from "react";
-
+import Photos from "./components/Photos/Photos";
 // getFetchPhotosUrl(1) -> "https://some.link/lalala/"
 // IPhoto[]
 
@@ -26,7 +26,8 @@ export default function App() {
 
   return (
     <div className="App">
-      <Taska />
+      {/* <Taska /> */}
+      <Photos />
       <div className="wrap">
         <div>{/* InputName */}</div>
         <div className="Buttons">
