@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
-import Photo from "../Photo/Photo";
 import { getFetchPhotosUrl } from "../../utils";
 import { IPhoto } from "../../interfaces";
-
 import "./Photos.css";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 function Photos() {
   const [photos, setPhotos] = useState<IPhoto[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(1); // Start from page 1
+  const totalPages = 5; // Total number of pages
+
+  const photosPerPage = 10;
 
   useEffect(() => {
     async function fetchPhotos() {
       try {
-        const response = await fetch(getFetchPhotosUrl(0));
+        const response = await fetch(getFetchPhotosUrl(page - 1));
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -27,7 +29,19 @@ function Photos() {
     }
 
     fetchPhotos();
-  }, []);
+  }, [page]);
+
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -45,6 +59,14 @@ function Photos() {
           </div>
         </div>
       ))}
+      <div className="pagination">
+        <button onClick={handlePrevPage} disabled={page === 1}>
+          Prev
+        </button>
+        <button onClick={handleNextPage} disabled={page === totalPages}>
+          Next
+        </button>
+      </div>
     </div>
   );
 }
