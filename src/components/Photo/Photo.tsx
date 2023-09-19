@@ -1,6 +1,7 @@
 import { IPhoto } from "../../interfaces";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import { useState } from "react";
+import "./Photo.css";
 
 interface PhotoProps {
   photo: IPhoto;
@@ -27,6 +28,7 @@ function Photo({ photo, onTitleChange }: PhotoProps) {
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditedTitle(e.target.value);
+    onTitleChange(photo.id, editedTitle);
   };
 
   return (
