@@ -1,45 +1,36 @@
+import React, { useState } from "react";
 import "./styles.css";
-import { Taska } from "./components/Taska";
-import { Tile } from "./components/Tile";
-import { Button } from "./components/Button";
-import { noop, getFetchPhotosUrl } from "./utils";
-import { InputName, IProps } from "./components/InputName";
-import { IPhoto } from "./interfaces";
-import { useEffect, useState } from "react";
 import Photos from "./components/Photos/Photos";
-// getFetchPhotosUrl(1) -> "https://some.link/lalala/"
-// IPhoto[]
-
-// region Hooks
-function getPhotos(pgNum: number): Promise<IPhoto[]> {
-  return fetch(getFetchPhotosUrl(pgNum))
-    .then((response) => response.json())
-    .then((data) => data);
-}
-
-// endregion
+import Pagination from "./components/Pagination/Pagination";
+import Container from "./components/Container/Container";
 
 export default function App() {
-  const [tiles, setTiles] = useState<IPhoto[]>();
+  const [page, setPage] = useState<number>(1);
+  const totalPages = 5;
 
-  useEffect(() => {}, []);
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
 
   return (
     <div className="App">
-      {/* <Taska /> */}
-      <Photos />
-      <div className="wrap">
-        <div>{/* InputName */}</div>
-        <div className="Buttons">
-          {/* Button Prev */}
-          {/* Button Next */}
-        </div>
-        <div className="Tiles">
-          {/* Tile */}
-          {/* Tile */}
-          {/* Tile */}
-        </div>
-      </div>
+      <Container>
+        <Photos page={page} />
+        <Pagination
+          totalPages={totalPages}
+          page={page}
+          handlePrevPage={handlePrevPage}
+          handleNextPage={handleNextPage}
+        />
+      </Container>
     </div>
   );
 }
