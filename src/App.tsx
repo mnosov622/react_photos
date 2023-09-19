@@ -9,27 +9,37 @@ import { IPhoto } from "./interfaces";
 import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
 
 export default function App() {
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
   const totalPages = 5;
+  const abortController = new AbortController();
 
-  const { data: photos, error } = useSWR<IPhoto[]>(getFetchPhotosUrl(page), async (url) => {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+  const { data: photos, error } = useSWR<IPhoto[]>(getFetchPhotosUrl(page - 1), async (url) => {
+    try {
+      const response = await fetch(url, {
+        signal: abortController.signal,
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    } catch (error) {
+      console.log("error occured");
+      throw error;
     }
-    return response.json();
   });
 
   const loading = !photos && !error;
 
   const handleNextPage = () => {
     if (page < totalPages) {
+      abortController.abort();
       setPage(page + 1);
     }
   };
 
   const handlePrevPage = () => {
     if (page > 1) {
+      abortController.abort();
       setPage(page - 1);
     }
   };
@@ -48,7 +58,7 @@ export default function App() {
         <Photos photos={photos} />
         <Pagination
           totalPages={totalPages}
-          page={page + 1}
+          page={page}
           handlePrevPage={handlePrevPage}
           handleNextPage={handleNextPage}
         />
