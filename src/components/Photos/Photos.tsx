@@ -22,10 +22,13 @@ function Photos({ photos }: PhotosProps) {
   let debounceTimeout: NodeJS.Timeout | null = null;
 
   const handleTitleChange = (photoId: number, newTitle: string) => {
-    setPhotoTitles((prevTitles) => ({
-      ...prevTitles,
+    const updatedTitles = {
+      ...photoTitles,
       [photoId]: newTitle,
-    }));
+    };
+    localStorage.setItem("photoTitles", JSON.stringify(updatedTitles));
+
+    setPhotoTitles(updatedTitles);
 
     // Debounce the function call
     if (debounceTimeout) {
@@ -35,8 +38,6 @@ function Photos({ photos }: PhotosProps) {
       sendStats(newTitle);
       debounceTimeout = null;
     }, debounceDelay);
-
-    localStorage.setItem("photoTitles", JSON.stringify({ ...photoTitles, [photoId]: newTitle }));
   };
 
   return (

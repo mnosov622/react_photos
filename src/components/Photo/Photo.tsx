@@ -1,6 +1,6 @@
 import { IPhoto } from "../../interfaces";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Photo.css";
 
 interface PhotoProps {
@@ -11,15 +11,13 @@ interface PhotoProps {
 function Photo({ photo, onTitleChange }: PhotoProps) {
   const [imageLoaded, setImageLoaded] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [editedTitle, setEditedTitle] = useState<string>(photo.title);
+  const [editedTitle, setEditedTitle] = useState<string>("");
 
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
+  useEffect(() => {
+    const localStorageTitle = localStorage.getItem("photoTitles");
+    const parsedLocalStorage = localStorageTitle ? JSON.parse(localStorageTitle) : {};
+    setEditedTitle(parsedLocalStorage[photo.id] || photo.title);
+  }, [photo.id]);
 
   const handleSaveClick = () => {
     onTitleChange(photo.id, editedTitle);
@@ -27,23 +25,18 @@ function Photo({ photo, onTitleChange }: PhotoProps) {
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditedTitle(e.target.value);
     onTitleChange(photo.id, editedTitle);
-  };
-
-  const closeEdit: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-    event.stopPropagation();
-    setIsEditing(false);
+    setEditedTitle(e.target.value);
   };
 
   return (
-    <div className="photo-card" onClick={handleEditClick}>
+    <div className="photo-card" onClick={() => setIsEditing(true)}>
       {!imageLoaded && <LoadingSpinner />}
       <img
         src={photo.url}
         alt={photo.title}
         style={{ display: imageLoaded ? "block" : "none" }}
-        onLoad={handleImageLoad}
+        onLoad={() => setImageLoaded(true)}
       />
       <div className="photo-details">
         {isEditing ? (
@@ -51,9 +44,6 @@ function Photo({ photo, onTitleChange }: PhotoProps) {
             <form className="form-container" onSubmit={handleSaveClick}>
               <input type="text" value={editedTitle} onChange={handleTitleChange} />
               <button type="submit">Save</button>
-              <button className="close-button" onClick={closeEdit}>
-                Exit
-              </button>
             </form>
           </>
         ) : (
