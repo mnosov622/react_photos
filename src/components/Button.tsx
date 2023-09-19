@@ -18,7 +18,7 @@ export const Button: FC<IProps> = ({ title, onClick, disabled }) => {
     <div
       className={cn({
         Button: true,
-        "Button--disabled": !!disabled
+        "Button--disabled": !!disabled,
       })}
       onClick={handleClick}
     >

@@ -1,18 +1,54 @@
 import { IPhoto } from "../../interfaces";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import { useState } from "react";
 
 interface PhotoProps {
   photo: IPhoto;
-  key: number;
+  onTitleChange: (photoId: number, newTitle: string) => void;
 }
 
-function Photo({ photo }: PhotoProps) {
+function Photo({ photo, onTitleChange }: PhotoProps) {
+  const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editedTitle, setEditedTitle] = useState<string>(photo.title);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    onTitleChange(photo.id, editedTitle);
+    setIsEditing(false);
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedTitle(e.target.value);
+  };
+
   return (
-    <div className="photo-card">
-      <img src={photo.url} alt={photo.title} />
+    <div className="photo-card" onClick={handleEditClick}>
+      {!imageLoaded && <LoadingSpinner />}
+      <img
+        src={photo.url}
+        alt={photo.title}
+        style={{ display: imageLoaded ? "block" : "none" }}
+        onLoad={handleImageLoad}
+      />
       <div className="photo-details">
-        <h2>{photo.title}</h2>
-        <p>Album ID: {photo.albumId}</p>
-        <p>Photo ID: {photo.id}</p>
+        {isEditing ? (
+          <form onSubmit={handleSaveClick}>
+            <input type="text" value={editedTitle} onChange={handleTitleChange} />
+            <button type="submit">Save</button>
+          </form>
+        ) : (
+          <>
+            <h2>{photo.title}</h2>
+          </>
+        )}
       </div>
     </div>
   );

@@ -14,6 +14,7 @@
   align-items: center;
   text-align: center;
   width: 30%;
+  cursor: pointer;
 }
 
 .photo-card img {
