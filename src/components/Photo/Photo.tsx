@@ -1,7 +1,7 @@
-import { IPhoto } from "../../interfaces"; // Import the IPhoto interface from your types file
+import { IPhoto } from "../../interfaces";
 
 interface PhotoProps {
-  photo: IPhoto; // Prop for passing the photo data
+  photo: IPhoto;
   key: number;
 }
 
