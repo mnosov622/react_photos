@@ -1,12 +1,14 @@
-import useSWR from "swr";
-import { getFetchPhotosUrl, sendStats } from "../../utils";
+import { sendStats } from "../../utils";
 import { IPhoto } from "../../interfaces";
-import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import Photo from "../Photo/Photo";
 import "./Photos.css";
 import { useState, useEffect } from "react";
 
-function Photos({ page }: { page: number }) {
+interface PhotosProps {
+  photos: IPhoto[] | undefined;
+}
+
+function Photos({ photos }: PhotosProps) {
   const [photoTitles, setPhotoTitles] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
@@ -15,16 +17,6 @@ function Photos({ page }: { page: number }) {
       setPhotoTitles(JSON.parse(cachedTitles));
     }
   }, []);
-
-  const { data: photos, error } = useSWR<IPhoto[]>(getFetchPhotosUrl(page - 1), async (url) => {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return response.json();
-  });
-
-  const loading = !photos && !error;
 
   const debounceDelay = 300;
   let debounceTimeout: NodeJS.Timeout | null = null;
@@ -46,14 +38,6 @@ function Photos({ page }: { page: number }) {
 
     localStorage.setItem("photoTitles", JSON.stringify({ ...photoTitles, [photoId]: newTitle }));
   };
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return <div>Error fetching photos: {error.message}</div>;
-  }
 
   return (
     <>
