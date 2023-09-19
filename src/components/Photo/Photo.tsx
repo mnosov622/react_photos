@@ -31,6 +31,11 @@ function Photo({ photo, onTitleChange }: PhotoProps) {
     onTitleChange(photo.id, editedTitle);
   };
 
+  const closeEdit: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.stopPropagation();
+    setIsEditing(false);
+  };
+
   return (
     <div className="photo-card" onClick={handleEditClick}>
       {!imageLoaded && <LoadingSpinner />}
@@ -42,10 +47,15 @@ function Photo({ photo, onTitleChange }: PhotoProps) {
       />
       <div className="photo-details">
         {isEditing ? (
-          <form onSubmit={handleSaveClick}>
-            <input type="text" value={editedTitle} onChange={handleTitleChange} />
-            <button type="submit">Save</button>
-          </form>
+          <>
+            <form className="form-container" onSubmit={handleSaveClick}>
+              <input type="text" value={editedTitle} onChange={handleTitleChange} />
+              <button type="submit">Save</button>
+              <button className="close-button" onClick={closeEdit}>
+                Exit
+              </button>
+            </form>
+          </>
         ) : (
           <>
             <h2>{photo.title}</h2>
